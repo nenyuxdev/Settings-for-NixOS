@@ -62,7 +62,6 @@
     };
     xserver = { enable = true; xkb = { layout = "latam,es,us"; variant = ""; }; };
     
-    # --- CONFIGURACIÓN CORREGIDA ---
     displayManager = {
       autoLogin = {
         enable = true;
