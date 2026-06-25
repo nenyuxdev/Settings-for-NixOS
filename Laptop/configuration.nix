@@ -16,7 +16,16 @@ in {
 
   hardware.graphics.enable = true;
 
-  networking = { hostName = "nixos"; networkmanager.enable = true; };
+  networking = { 
+    hostName = "nixos"; 
+    networkmanager.enable = true; 
+    firewall = {
+      enable = true;
+      allowedTCPPortRanges = [ { from = 1714; to = 1764; } ];
+      allowedUDPPortRanges = [ { from = 1714; to = 1764; } ];
+    };
+  };
+
   time.timeZone = "America/Caracas";
   i18n.defaultLocale = "es_MX.UTF-8";
 
@@ -37,9 +46,19 @@ in {
     desktopManager.plasma6.enable = true;
     udisks2.enable = true;
     printing.enable = true;
+    flatpak.enable = true;
   };
 
-  programs = { dconf.enable = true; kdeconnect.enable = true; adb.enable = true; };
+  xdg.portal = {
+    enable = true;
+    extraPortals = [ pkgs.xdg-desktop-portal-kde ];
+  };
+
+  programs = { 
+    dconf.enable = true; 
+    kdeconnect.enable = true; 
+    adb.enable = true; 
+  };
 
   nixpkgs.config.allowUnfree = true;
   system.stateVersion = "26.11";
