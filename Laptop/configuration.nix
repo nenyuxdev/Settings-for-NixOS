@@ -6,6 +6,8 @@
   boot = {
     loader = { systemd-boot.enable = true; efi.canTouchEfiVariables = true; };
     initrd.kernelModules = [ "i915" ];
+    kernelPackages = pkgs.linuxPackages_latest;
+
     consoleLogLevel = 0;
     initrd.verbose = false;
     kernelParams = [ "quiet" "splash" "loglevel=0" "rd.systemd.show_status=false" "rd.udev.log_priority=3" "udev.log_priority=3" "vt.global_cursor_default=0" ];
@@ -14,9 +16,9 @@
 
   hardware.graphics.enable = true;
 
-  networking = { 
-    hostName = "nixos"; 
-    networkmanager.enable = true; 
+  networking = {
+    hostName = "nixos";
+    networkmanager.enable = true;
     firewall = {
       enable = true;
       allowedTCPPortRanges = [ { from = 1714; to = 1764; } ];
@@ -40,22 +42,19 @@
 
   services = {
     xserver = { enable = true; xkb.layout = "latam"; };
-    displayManager.sddm = { enable = true; autoLogin = { enable = true; user = "neny"; }; wayland.enable = true; };
+    displayManager = {
+      sddm = { enable = true; wayland.enable = true; };
+      autoLogin = { enable = true; user = "neny"; };
+    };
     desktopManager.plasma6.enable = true;
     udisks2.enable = true;
     printing.enable = true;
     flatpak.enable = true;
   };
 
-  xdg.portal = {
-    enable = true;
-    extraPortals = [ pkgs.xdg-desktop-portal-kde ];
-  };
-
-  programs = { 
-    dconf.enable = true; 
-    kdeconnect.enable = true; 
-    adb.enable = true; 
+  programs = {
+    dconf.enable = true;
+    kdeconnect.enable = true;
   };
 
   nixpkgs.config.allowUnfree = true;
@@ -64,7 +63,33 @@
   environment = {
     plasma6.excludePackages = with pkgs.kdePackages; [ print-manager kinfocenter khelpcenter okular gwenview elisa plasma-systemmonitor ];
     systemPackages = with pkgs; [
-      brave cava htop onlyoffice-desktopeditors proton-vpn fastfetch vlc spotify vscodium qbittorrent motrix android-tools mtkclient edl idevicerestore localsend kdenlive partitionmanager isoimagewriter davinci-resolve tor-browser obs-studio gimp discord zapzap nerd-fonts.jetbrains-mono (python3.withPackages (_: []))
+      (python3.withPackages (_: []))
+      kdePackages.partitionmanager
+      kdePackages.isoimagewriter
+      nerd-fonts.jetbrains-mono
+      onlyoffice-desktopeditors
+      davinci-resolve
+      idevicerestore
+      android-tools
+      tor-browser
+      metasploit
+      obs-studio
+      proton-vpn
+      fastfetch
+      mtkclient
+      localsend
+      vscodium
+      wifite2
+      discord
+      spotify
+      motrix
+      jdk25
+      brave
+      gimp
+      cava
+      htop
+      vlc
+      edl
     ];
   };
 }
