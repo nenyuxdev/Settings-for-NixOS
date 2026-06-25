@@ -1,20 +1,27 @@
-{ config, pkgs, ... }: {
+{ config, pkgs, ... }:
+
+let
+  unstable = import <unstable> { config = config.nixpkgs.config; };
+in {
   imports = [ ./hardware-configuration.nix ];
 
   boot = {
     loader = { systemd-boot.enable = true; efi.canTouchEfiVariables = true; };
-    kernelPackages = pkgs.linuxPackages;
-    kernel.sysctl = { "net.core.default_qdisc" = "fq"; "net.ipv4.tcp_congestion_control" = "bbr"; };
-    kernelParams = [ "quiet" "splash" "loglevel=3" ];
+    initrd.kernelModules = [ "i915" ];
+    consoleLogLevel = 0;
+    initrd.verbose = false;
+    kernelParams = [ "quiet" "splash" "loglevel=0" "rd.systemd.show_status=false" "rd.udev.log_priority=3" "udev.log_priority=3" "vt.global_cursor_default=0" ];
     plymouth = { enable = true; theme = "bgrt"; };
   };
+
+  hardware.graphics.enable = true;
 
   networking = { hostName = "nixos"; networkmanager.enable = true; };
   time.timeZone = "America/Caracas";
   i18n.defaultLocale = "es_MX.UTF-8";
 
   nix = {
-    settings = { experimental-features = ["nix-command" "flakes"]; auto-optimise-store = true; };
+    settings = { experimental-features = [ "nix-command" "flakes" ]; auto-optimise-store = true; };
     gc = { automatic = true; dates = "weekly"; options = "--delete-older-than 7d"; };
   };
 
@@ -25,31 +32,22 @@
   };
 
   services = {
-    xserver = { enable = true; xkb = { layout = "latam"; }; };
+    xserver = { enable = true; xkb.layout = "latam"; };
     displayManager.sddm = { enable = true; autoLogin = { enable = true; user = "neny"; }; wayland.enable = true; };
     desktopManager.plasma6.enable = true;
     udisks2.enable = true;
     printing.enable = true;
   };
 
-  programs = {
-    dconf.enable = true;
-    kdeconnect.enable = true;
-    adb.enable = true;
-  };
+  programs = { dconf.enable = true; kdeconnect.enable = true; adb.enable = true; };
 
   nixpkgs.config.allowUnfree = true;
   system.stateVersion = "26.11";
 
   environment = {
-    plasma6.excludePackages = with pkgs.kdePackages; [ 
-      print-manager kinfocenter khelpcenter okular gwenview elisa plasma-systemmonitor 
-    ];
+    plasma6.excludePackages = with pkgs.kdePackages; [ print-manager kinfocenter khelpcenter okular gwenview elisa plasma-systemmonitor ];
     systemPackages = with pkgs; [
-      brave cava htop onlyoffice-desktopeditors proton-vpn fastfetch vlc 
-      spotify vscodium qbittorrent motrix android-tools mtkclient edl 
-      idevicerestore localsend kdenlive partitionmanager isoimagewriter 
-      davinci-resolve tor-browser obs-studio gimp discord
-      nerd-fonts.jetbrains-mono (python3.withPackages (_: []))
+      brave cava htop onlyoffice-desktopeditors proton-vpn fastfetch vlc spotify vscodium qbittorrent motrix android-tools mtkclient edl idevicerestore localsend kdenlive partitionmanager isoimagewriter davinci-resolve tor-browser obs-studio gimp discord zapzap nerd-fonts.jetbrains-mono (python3.withPackages (_: []))
     ];
   };
+}
