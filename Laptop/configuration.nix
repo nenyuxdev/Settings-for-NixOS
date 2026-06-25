@@ -1,8 +1,6 @@
 { config, pkgs, ... }:
 
-let
-  unstable = import <unstable> { config = config.nixpkgs.config; };
-in {
+{
   imports = [ ./hardware-configuration.nix ];
 
   boot = {
